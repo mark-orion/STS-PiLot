@@ -52,3 +52,5 @@ Toggles Explorer Hat touchpads 1-4 and LEDs
 No frills, bells and whistles MJPEG video feed from the camera
 ### /
 The root serves the web interface itself  
+
+Enjoy! Mark Dammer, Forres, Scotland 2017
