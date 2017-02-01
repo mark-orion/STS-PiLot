@@ -1,0 +1,71 @@
+body {
+       background-color: black;
+       }
+
+table {
+        width: 100%;
+        }
+
+.title {
+        text-align: center;
+        color: green;
+        width: 80%; 
+        background-color: black;
+        }
+
+.video {
+         color:green;
+         text-align:center;
+         }
+
+td.video img {
+               width:80%;
+               object-fit:contain;
+               }
+
+.controlbar {
+              width: 10%;
+              height: 14%
+              }
+
+.speed_0 {
+           background-color: #33ff33;
+           }
+
+.speed_30 {
+            background-color: yellow;
+            }
+
+.speed_60 {
+            background-color: #ff9900;
+            }
+
+.speed_100 {
+             background-color: red;
+             }
+
+.led-controls {
+                text-align: center;
+                font-weight: bold;
+                width: 20%;
+                 }
+
+#blue {
+          background-color: blue;
+        }
+
+#yellow {
+          background-color: yellow;
+       }
+
+#red {
+          background-color: red;
+          }
+
+#green {
+          background-color: green;
+          }
+
+#l0, #r0 {
+           outline: 10px solid black;
+           }
