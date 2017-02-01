@@ -37,3 +37,18 @@ The coloured tiles numbered 1-4 at the bottom of the screen control the corrospo
 Touching pad 3 (red) on the screen or the physical device immobilizes the device by toggling the "chocks".  
 The STS-Pi can be shut down completely by activating the "chocks" (red LED flashing) and then pad 4 (green LED flashing). The shutdown will happen after a few seconds and can be interrupted by releasing the chocks.  
 The pads 1 and 2 are not doing anything apart from toggling their LEDs at the moment.  
+
+## Web API / URLs to control the robot
+### URL example for "half speed forward": http://192.168.1.17:5000/motor?l=50&r=50
+### /motor?l=[speed]&r=[speed]
+Set speed for the motors (l=left, r=right). Usable values: -100 (full reverse) to 0 (stop) to 100 (full forward)
+### /joystick?x=[xaxis]&y=[yaxis]
+Two axis interface for the motors. Usable values: -100 (full left/down) to 0 (center) to 100 (full right/up)
+### /heartbeat
+Resets watchdog timer. All systems stop (chocks_on) if not called every 10 seconds (default setting)
+### /touchpad?pad=[1-4]
+Toggles Explorer Hat touchpads 1-4 and LEDs
+### /video_feed
+MJPEG video feed from the camera
+### /
+The root serves the web interface itself  
