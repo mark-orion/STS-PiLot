@@ -36,3 +36,4 @@ For ease of use you can double click / tap and this will set the speed for both 
 The coloured tiles numbered 1-4 at the bottom of the screen control the corrosponding touchpads / LEDs on the Explorer Hat.
 Touching pad 3 (red) on the screen or the physical device immobilizes the device by toggling the "chocks".
 The STS-Pi can be shut down completely by activating the "chocks" (red LED flashing) and then pad 4 (green LED flashing). The shutdown will happen after a few seconds and can be interrupted by releasing the chocks.
+The pads 1 and 2 are not doing anything apart from toggling their LEDs at the moment.
