@@ -28,15 +28,15 @@ cd STS-PiLot
 python app.py  
 
 ## Using STS-PiLot
-The web interface runs on port 5000 of the raspberry pi. You can access it via http://ip_goes_here:5000 or if you have Avahi / mDNS running on your Pi at http://hostname.local:5000 where hostname is the hostname of your STS-Pi.  
+The web interface runs on port 5000 of the Raspberry Pi. You can access it via http://ip_goes_here:5000 or at http://hostname.local:5000 if you have Avahi / mDNS running on your Pi and the client. Hostname is the hostname of your STS-Pi that can be changed with raspi-config (advanced settings).  
 Using the webinterface if fairly easy:  
 At the center you have the live video with the controls for the two motors to the left and to the right.  
 Tapping / clicking on the motor controls sets the forward or reverse speed of the motor.  
 For ease of use you can double click / tap and this will set the speed for both motors simultaneously. A single tap / click in the center (video) area of the screen will immediately stop the motors.  
 The coloured tiles numbered 1-4 at the bottom of the screen control the corrosponding touchpads / LEDs on the Explorer Hat.  
 Touching pad 3 (red) on the screen or the physical device immobilizes the device by toggling the "chocks".  
-The STS-Pi can be shut down completely by activating the "chocks" (red LED flashing) and then pad 4 (green LED flashing). The shutdown will happen after a few seconds and can be interrupted by releasing the chocks.  
-The pads 1 and 2 are not doing anything apart from toggling their LEDs at the moment.  
+The STS-Pi can be shut down completely by activating the "chocks" (red LED flashing) and then pad 4 (green LED flashing). The shutdown will happen after a few seconds and can be interrupted by releasing the chocks (touching pad 3 again).  
+At the moment the pads 1 and 2 are not doing anything apart from toggling their LEDs.  
 
 ## Web API / URLs to control the robot
 ### URL example for "half speed forward": http://192.168.1.17:5000/motor?l=50&r=50
@@ -49,6 +49,6 @@ Resets watchdog timer. All systems stop (chocks_on) if not called every 10 secon
 ### /touchpad?pad=[1-4]
 Toggles Explorer Hat touchpads 1-4 and LEDs
 ### /video_feed
-MJPEG video feed from the camera
+No frills, bells and whistles MJPEG video feed from the camera
 ### /
 The root serves the web interface itself  
