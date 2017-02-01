@@ -9,6 +9,7 @@ The live streaming part is based on the example code provided by Miguel Grinberg
 * Frontend ony requires HTML, Javascript and CSS - no proprietary plugins needed.
 * Works without modification when no Raspberry Pi camera is detected - But you are missing something!
 * Easy web-API to control the robot from your own application.
+* API provides both "tank track" style (Y-Y) and joystick style (X-Y) interface.
 * Robot stops automatically when connection is lost.
 
 ## Install Dependencies
@@ -23,7 +24,7 @@ follow the instructions here: https://github.com/pimoroni/explorer-hat
 Clone or download the application into a directory of your choice:
 git clone https://github.com/mark-orion/STS-PiLot.git
 
-## Running the program (as normal user)  
+## Running the program (as normal user, no "sudo" required)  
 cd STS-PiLot  
 python app.py  
 
@@ -32,7 +33,7 @@ The web interface runs on port 5000 of the Raspberry Pi. You can access it via h
 Using the webinterface if fairly easy:  
 At the center you have the live video with the controls for the two motors to the left and to the right.  
 Tapping / clicking on the motor controls sets the forward or reverse speed of the motor.  
-For ease of use you can double click / tap and this will set the speed for both motors simultaneously. A single tap / click in the center (video) area of the screen will immediately stop the motors.  
+For ease of use you can double click / tap and this will set the speed for both motors simultaneously. A single tap / click in the center (video) area of the screen will immediately stop the motors - emergency stop!  
 The coloured tiles numbered 1-4 at the bottom of the screen control the corrosponding touchpads / LEDs on the Explorer Hat.  
 Touching pad 3 (red) on the screen or the physical device immobilizes the device by toggling the "chocks".  
 The STS-Pi can be shut down completely by activating the "chocks" (red LED flashing) and then pad 4 (green LED flashing). The shutdown will happen after a few seconds and can be interrupted by releasing the chocks (touching pad 3 again).  
