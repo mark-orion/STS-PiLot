@@ -8,9 +8,6 @@ import time
 from flask import Flask, render_template, request, Response
 from gevent.wsgi import WSGIServer
 
-# emulated camera
-# from camera import Camera
-
 # Raspberry Pi camera module (requires picamera package)
 from camera_pi import Camera, check_camera
 
@@ -37,7 +34,7 @@ def watchdog_timer():
             if watchdog <= timeout and chocks:
                 chocks_off()
 
-# Handler for Ctrl-C
+# Handler for a clean shutdown when pressing Ctrl-C
 def signal_handler(signal, frame):
     xhat.light.blue.blink(0.1)
     global watchdog_active
@@ -167,8 +164,9 @@ def joystick():
     w = (100-abs(y_axis)) * (x_axis/100) + x_axis
     r = int((v+w) / 2)
     l = int((v-w) / 2)
-    xhat.motor.one.speed(r)
-    xhat.motor.two.speed(l)
+    if not chocks:
+    	xhat.motor.one.speed(r)
+    	xhat.motor.two.speed(l)
     return 'ok'
 
 # URL for live video feed
