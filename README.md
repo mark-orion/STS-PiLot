@@ -13,6 +13,8 @@ The live streaming part is based on the example code provided by Miguel Grinberg
 * Robot stops automatically when connection is lost.
 
 ## Install Dependencies
+### Picamera
+sudo apt-get install python-picamera
 ### Flask
 sudo pip install -U flask
 ### Gevent
