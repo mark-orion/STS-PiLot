@@ -23,7 +23,6 @@ Apple Safari and iOS browsers have limited or broken MJPEG support.
 Please use one of the tested browsers instead.
 
 ## Install Dependencies (Picamera, Flask, Gevent)
-### Picamera
 sudo apt-get install python-picamera python-flask python-gevent
 
 ## Install Explorer Hat support
