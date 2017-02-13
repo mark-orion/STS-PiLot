@@ -22,14 +22,11 @@ CAVEAT: MS Edge and Internet Explorer do not support MJPEG natively.
 Apple Safari and iOS browsers have limited or broken MJPEG support.  
 Please use one of the tested browsers instead.
 
-## Install Dependencies
+## Install Dependencies (Picamera, Flask, Gevent)
 ### Picamera
-sudo apt-get install python-picamera
-### Flask
-sudo pip install -U flask
-### Gevent
-sudo pip install -U gevent
-### Explorer Hat
+sudo apt-get install python-picamera python-flask python-gevent
+
+## Install Explorer Hat support
 follow these instructions: https://github.com/pimoroni/explorer-hat
 
 ## Install STS-PiLot
