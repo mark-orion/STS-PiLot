@@ -12,6 +12,16 @@ The live streaming part is based on the example code provided by Miguel Grinberg
 * API provides both "tank track" style (Y-Y) and joystick style (X-Y) interface.
 * Robot stops automatically when connection is lost.
 
+## Requirements
+* STS-Pi with Raspberry Pi and Explorer Hat Pro
+* Computer / Tablet / Phone with web browser that supports MJPEG
+* Tested with the following browsers:  
+Linux and Windows: Firefox, Chrome and Opera.  
+Android (5.1 on Fairphone 2): Lightning, IceCat Mobile, Chromium.  
+CAVEAT: MS Edge and Internet Explorer do not support MJPEG natively.  
+Apple Safari and iOS browsers have limited or broken MJPEG support.  
+Please use one of the tested browsers instead.
+
 ## Install Dependencies
 ### Picamera
 sudo apt-get install python-picamera
