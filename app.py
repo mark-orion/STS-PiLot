@@ -112,7 +112,7 @@ def index():
         """Video streaming home page."""
         return render_template('index.html')
     else:
-        return render_template('novideo.html')
+        return current_app.send_static_file('novideo.html')
 
 def gen(camera):
     """Video streaming generator function."""
