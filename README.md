@@ -31,6 +31,9 @@ follow these instructions: https://github.com/pimoroni/explorer-hat
 ## Install STS-PiLot
 Clone or download the application into a directory of your choice:
 git clone https://github.com/mark-orion/STS-PiLot.git
+You can update the already cloned application:  
+git remote update  
+git pull
 
 ## Running the program (as normal user, no "sudo" required)  
 cd STS-PiLot  
@@ -47,6 +50,7 @@ The green LED will flash quickly for about 1 second to indicate STS-PiLot has st
 
 ## Using STS-PiLot
 The web interface runs on port 5000 of the Raspberry Pi. You can access it via http://ip_goes_here:5000 or at http://hostname.local:5000 if you have Avahi / mDNS running on your Pi and the client. Hostname is the hostname of your STS-Pi that can be changed with raspi-config (advanced settings).  
+If you do not have the camera installed you can use http://ip_goes_here:5000/static/novideo.html  
 Using the webinterface if fairly easy:  
 At the center you have the live video with the controls for the two motors to the left and to the right.  
 Tapping / clicking on the motor controls sets the forward or reverse speed of the motor.  
