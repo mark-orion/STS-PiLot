@@ -14,6 +14,7 @@ from camera_pi import Camera, check_camera
 
 app = Flask(__name__, static_url_path='/static')
 camera_detected = True
+video_status = True
 brakes = False
 chocks = False
 blue = False
@@ -115,11 +116,17 @@ def chocks_off():
 # Base URL / - loads web interface        
 @app.route('/')
 def index():
+    global video_status
+    novideo = request.args.get('video')
+    if novideo == 'n':
+        video_status = False
+    else:
+	video_status = camera_detected
     return app.send_static_file('index.html')
 
 def gen(camera):
     """Video streaming generator function."""
-    if camera_detected:
+    if video_status:
         while True:
             frame = camera.get_frame()
             yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
@@ -135,12 +142,13 @@ def touchpad():
     return 'ok'
 
 # URL for heartbeat requests (resets watchdog timer)    
+# Returns JSON object with status data
 @app.route('/heartbeat')
 def heartbeat():
     global watchdog
     watchdog = 0
     output = {}
-    output['v'] = camera_detected
+    output['v'] = video_status
     output['l'] = left_motor
     output['r'] = right_motor
     output['i1'] = xhat.input.one.read()

@@ -9,8 +9,10 @@ The live streaming part is based on the example code provided by Miguel Grinberg
 * Frontend ony requires HTML, Javascript and CSS - no proprietary plugins needed.
 * Works without modification when no Raspberry Pi camera is detected - But you are missing something!
 * Easy web-API to control the robot from your own application.
+* API provides JSON readout of analog and digital inputs.
 * API provides both "tank track" style (Y-Y) and joystick style (X-Y) interface.
 * Robot stops automatically when connection is lost.
+* Data and video connection is automatically reestablished after connection loss.
 
 ## Requirements
 * STS-Pi with Raspberry Pi and Explorer Hat Pro
@@ -23,7 +25,7 @@ Apple Safari and iOS browsers have limited or broken MJPEG support.
 Please use one of the tested browsers instead.
 
 ## Install Dependencies (Picamera, Flask, Gevent)
-sudo apt-get install python-picamera python-flask python-gevent
+sudo apt-get install python-picamera python-flask python-gevent python-simplejson
 
 ## Install Explorer Hat support
 follow these instructions: https://github.com/pimoroni/explorer-hat
@@ -40,7 +42,7 @@ cd STS-PiLot
 python app.py  
 
 ## Start the program automatically while booting
-cd STS-Pilot  
+cd STS-PiLot  
 chmod +x autostart.sh  
 open /etc/rc.local with your preferred editor and add the following line BEFORE the last line reading "exit 0":  
 /home/pi/STS-PiLot/autostart.sh  
@@ -50,13 +52,14 @@ The green LED will flash quickly for about 1 second to indicate STS-PiLot has st
 
 ## Using STS-PiLot
 The web interface runs on port 5000 of the Raspberry Pi. You can access it via http://ip_goes_here:5000 or at http://hostname.local:5000 if you have Avahi / mDNS running on your Pi and the client. Hostname is the hostname of your STS-Pi that can be changed with raspi-config (advanced settings).  
-If you do not have the camera installed you can use http://ip_goes_here:5000/static/novideo.html  
+http://ip_goes_here:5000/?video=n opens the interface without live video.  
 Using the webinterface if fairly easy:  
-At the center you have the live video with the controls for the two motors to the left and to the right.  
+At the center you have the live video with the controls for the two motors to the left and to the right. In portrait mode the controls appear under the video.  
 Tapping / clicking on the motor controls sets the forward or reverse speed of the motor.  
 For ease of use you can double click / tap and this will set the speed for both motors simultaneously. A single tap / click in the center (video) area of the screen will immediately stop the motors - emergency stop!  
 The coloured tiles numbered 1-4 at the bottom of the screen control the corrosponding touchpads / LEDs on the Explorer Hat.  
 Touching pad 3 (red) on the screen or the physical device immobilizes the device by toggling the "chocks".  
+The orange "HUD" button toggles the Status Display (HUD).
 
 ## Shut down the STS-Pi
 The STS-Pi can be shut down completely by activating the "chocks" (red LED flashing) and then pad 4 (green LED flashing). The shutdown will happen after a few seconds and can be interrupted by releasing the chocks (touching pad 3 again).  
@@ -69,7 +72,8 @@ Set speed for the motors (l=left, r=right). Usable values: -100 (full reverse) t
 ### /joystick?x=[xaxis]&y=[yaxis]
 Two axis interface for the motors. Usable values: -100 (full left/down) to 0 (center) to 100 (full right/up)
 ### /heartbeat
-Resets watchdog timer. All systems stop (chocks_on) if not called every 10 seconds (default setting)
+Resets watchdog timer. All systems stop (chocks_on) if not called every 10 seconds (default setting)  
+Returns JSON object with analog and digital input (Sensor) readouts.
 ### /touchpad?pad=[1-4]
 Toggles Explorer Hat touchpads 1-4 and LEDs
 ### /video_feed
