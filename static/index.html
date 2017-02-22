@@ -17,12 +17,23 @@
 <div id="l-100" class="controlpad speed_100" onclick="motor_l(-100)">&nbsp;</div>
 </div>
 <div id="middle">
-<div id="video" onclick="brake()"><div class="label">Video Disabled<br>or no camera detected.</div></div>
+<div id="videowrapper" onclick="brake()">
+<!--
+<div id="video"><img src="{{ url_for('video_feed') }}" alt="Connecting to Live Video"></div>
+-->
+<div id="video"></div>
+<div id="overlay">
+<div id="title">STS-Pilot</div>
+<div id="status"></div>
+<div id="sensors"></div>
+</div>
+</div>
 <div id="buttonbar">	
 <div id="blue" class="touchpad" onclick="touchpad(1)"><div class="label">1</div></div>
 <div id="yellow" class="touchpad" onclick="touchpad(2)"><div class="label">2</div></div>
 <div id="red" class="touchpad" onclick="touchpad(3)"><div class="label">3</div></div>
 <div id="green" class="touchpad" onclick="touchpad(4)"><div class="label">4</div></div>
+<div id="hud" class="touchpad" onclick="toggle_hud()"><div class="label">HUD</div></div>
 </div>	
 </div>
 <div id="rightbar">

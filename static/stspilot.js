@@ -8,26 +8,96 @@ function makeHttpObject() {
     throw new Error("Could not create HTTP request object.");
 }
 var request = makeHttpObject();
+var getSensors = makeHttpObject();
+var doubleClickTimer = 200;
+var linkCheckTimer = 5000;
+var heartbeatTimer = 1000;
 var newSpeedL = 0;
 var newSpeedR = 0;
 var actSpeedL = 0;
 var actSpeedR = 0;
 var doubleClick = false;
+var showHUD = true;
+var video = false;
+var link = true;
+var videosrc = '<img src="/video_feed" alt="Connecting to Live Video">'
 var inactive = "0px";
 var active = "10px solid black";
-var clickTimer = setTimeout(reset_doubleclick, 200);
-setInterval(heartbeat, 5000);
+var clickTimer = setTimeout(reset_doubleclick, doubleClickTimer);
+var linkCheck = setTimeout(linkLost, linkCheckTimer);
+setInterval(heartbeat, heartbeatTimer);
+getSensors.onreadystatechange = updateHUD;
+setTimeout(checkVideo, 500);
+function linkLost() {
+	var status = 'Status<br>Link: DOWN!';
+	var sensors = 'Sensors<br>No Data!';
+	document.getElementById("status").innerHTML = status;
+    document.getElementById("sensors").innerHTML = sensors;
+    document.getElementById("video").innerHTML = '&nbsp';
+    link = false;
+}
+function checkVideo() {
+	if (video) {
+		document.getElementById("video").innerHTML = videosrc;
+	}
+}
 function heartbeat() {
     var heartbeat_url = "/heartbeat";
-    request.open("GET", heartbeat_url, true);
-    request.send(null);
+    getSensors.open("GET", heartbeat_url, true);
+    getSensors.send(null);
+}
+function updateHUD(e) {
+	var status;
+	var sensors;
+	if (getSensors.readyState == 4 && getSensors.status == 200) {
+        var response = JSON.parse(getSensors.responseText);
+        video = response.v;
+        status = "Status<br>Link: online<br>Videolink: ";
+        status += video;
+        status += "<br>Motor L: ";
+        status += response.l;
+        status += "<br>Motor R: ";
+        status += response.r;
+        sensors = "Sensors<br>Digital 1: ";
+        sensors += response.i1;
+        sensors += "<br>Digital 2: ";
+        sensors += response.i2;
+        sensors += "<br>Digital 3: ";
+        sensors += response.i3;
+        sensors += "<br>Digital 4: ";
+        sensors += response.i4;
+        sensors += "<br>Analog 1: ";
+        sensors += response.a1;
+        sensors += "<br>Analog 2: ";
+        sensors += response.a2;
+        sensors += "<br>Analog 3: ";
+        sensors += response.a3;
+        sensors += "<br>Analog 4: ";
+        sensors += response.a4;
+        document.getElementById("status").innerHTML = status;
+        document.getElementById("sensors").innerHTML = sensors;
+        clearTimeout(linkCheck);
+		linkCheck = setTimeout(linkLost, linkCheckTimer);
+		if (!link) {
+			location.reload();
+		}
+		link = true;
+	}
+}
+function toggle_hud() {
+	showHUD = !showHUD;
+	if (showHUD) {
+		document.getElementById("overlay").style.display = 'block';
+	} else {
+		document.getElementById("overlay").style.display = 'none';
+	}
 }
 function reset_doubleclick() {
     doubleClick = false;
 }
 function set_doubleclick() {
     clearTimeout(clickTimer);
-    clickTimer = setTimeout(reset_doubleclick, 200);
+    clickTimer = setTimeout(reset_doubleclick, doubleClickTimer);
     doubleClick = true;
 }
 function motor_l(lspeed) {
@@ -74,4 +144,8 @@ function brake() {
     newSpeedR = 0;
     newSpeedL = 0;
     set_motor();
-}   
+}
+heartbeat();
+
+
+

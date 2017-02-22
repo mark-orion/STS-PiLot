@@ -37,17 +37,50 @@ width: 100%;
 height: 14.3%;
 }
 
-#video {
-color:green;
-text-align:center;
+#videowrapper {
+position: relative;
 width: 100%;
 height: 90%;
+}
+
+#video {
+z-index:1;
+width: 100%;
+height: 100%;
 }
 
 #video img {
 width: 100%;
 height: 100%;
 object-fit: contain;
+}
+
+#overlay {
+position: absolute;
+z-index:100;
+width: 100%;
+height: 100%;
+top: 0;
+left: 0;
+color: #33ff33;
+text-align: center;
+text-shadow: 1px 1px black;
+}
+
+#status {
+top: 0;
+float: left;
+text-align: left;
+padding: 5px;
+width: 40%;
+}
+
+#sensors {
+top: 0;
+float: right;
+text-align: right;
+padding: 5px;
+width: 40%;
 }
 
 #buttonbar {
@@ -58,7 +91,7 @@ width: 100%;
 .touchpad {
 text-align: center;
 font-weight: bold;
-width: 25%;
+width: 20%;
 height: 100%;
 float: left;
 }
@@ -95,6 +128,39 @@ background-color: red;
 background-color: green;
 }
 
+#hud {
+background-color: orange;
+}
+
 #l0, #r0 {
 outline: 10px solid black;
+}
+
+@media screen and (orientation:portrait) {
+
+#middle {
+position: absolute;
+width: 100%;
+height: 50%;
+top: 0;
+float: left;
+}
+
+#leftbar {
+position: absolute;
+width: 20%;
+height: 50%;
+top: 50%;
+left: 0;
+overflow: hidden;
+}
+
+#rightbar {
+position: absolute;
+width: 20%;
+height: 50%;
+top: 50%;
+left: 80%;
+overflow: hidden;
+}
 }

@@ -5,13 +5,14 @@ import signal
 import explorerhat as xhat
 import threading
 import time
-from flask import Flask, render_template, request, Response
+import json
+from flask import Flask, request, Response
 from gevent.wsgi import WSGIServer
 
 # Raspberry Pi camera module (requires picamera package)
 from camera_pi import Camera, check_camera
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 camera_detected = True
 brakes = False
 chocks = False
@@ -21,6 +22,8 @@ watchdog_active = True
 watchdog_running = True
 watchdog = 20
 timeout = 10
+left_motor = 0
+right_motor = 0
 
 # Immobilizes sytem (chocks on) after 'timeout' seconds 
 def watchdog_timer():
@@ -82,9 +85,13 @@ def touch_handler(channel, event):
     
 def brakes_on():
     global brakes
+    global left_motor
+    global right_motor
     brakes = True
-    xhat.motor.one.speed(0)
-    xhat.motor.two.speed(0)
+    left_motor = 0;
+    right_motor = 0;
+    xhat.motor.one.speed(right_motor)
+    xhat.motor.two.speed(left_motor)
     
 def brakes_off():
     global brakes
@@ -108,18 +115,14 @@ def chocks_off():
 # Base URL / - loads web interface        
 @app.route('/')
 def index():
-    if camera_detected:
-        """Video streaming home page."""
-        return render_template('index.html')
-    else:
-        return current_app.send_static_file('novideo.html')
+    return app.send_static_file('index.html')
 
 def gen(camera):
     """Video streaming generator function."""
     if camera_detected:
-    	while True:
-        	frame = camera.get_frame()
-        	yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        while True:
+            frame = camera.get_frame()
+            yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
     else:
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + '' + b'\r\n')
 
@@ -136,26 +139,44 @@ def touchpad():
 def heartbeat():
     global watchdog
     watchdog = 0
-    return 'ok'
+    output = {}
+    output['v'] = camera_detected
+    output['l'] = left_motor
+    output['r'] = right_motor
+    output['i1'] = xhat.input.one.read()
+    output['i2'] = xhat.input.two.read()
+    output['i3'] = xhat.input.three.read()
+    output['i4'] = xhat.input.four.read()
+    output['a1'] = xhat.analog.one.read()
+    output['a2'] = xhat.analog.two.read()
+    output['a3'] = xhat.analog.three.read()
+    output['a4'] = xhat.analog.four.read()
+    return json.dumps(output)
 
 # URL for motor control - format: /motor?l=[speed]&r=[speed]
 @app.route('/motor')
 def motor():
+    global left_motor
+    global right_motor
     left = request.args.get('l')
     right = request.args.get('r')
     if left and not chocks:
         left = int(left)
         if left >= -100 and left <= 100:
-            xhat.motor.two.speed(left)
+            left_motor = left
+            xhat.motor.two.speed(left_motor)
     if right and not chocks:
         right = int(right)
         if right >= -100 and right <= 100:
-            xhat.motor.one.speed(right)
+            right_motor = right
+            xhat.motor.one.speed(right_motor)
     return 'ok'
 
 # URL for joystick input - format: /joystick?x=[x-axis]&y=[y-axis]
 @app.route('/joystick')
 def joystick():
+    global left_motor
+    global right_motor
     x_axis = -1 * int(request.args.get('x'))
     y_axis = int(request.args.get('y'))
     x_axis = max( min(x_axis, 100), -100)
@@ -165,8 +186,10 @@ def joystick():
     r = int((v+w) / 2)
     l = int((v-w) / 2)
     if not chocks:
-    	xhat.motor.one.speed(r)
-    	xhat.motor.two.speed(l)
+        right_motor = r
+        left_motor = l
+        xhat.motor.one.speed(right_motor)
+        xhat.motor.two.speed(left_motor)
     return 'ok'
 
 # URL for live video feed
