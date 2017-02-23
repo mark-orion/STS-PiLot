@@ -19,6 +19,7 @@ brakes = False
 chocks = False
 blue = False
 yellow = False
+green = False
 watchdog_active = True
 watchdog_running = True
 watchdog = 20
@@ -54,35 +55,42 @@ def touch_handler(channel, event):
     global chocks
     global blue
     global yellow
+    global green
     global watchdog_running
     if channel == 1:
         blue = not blue
         if blue:
             xhat.light.blue.on()
+            xhat.output.one.on()
         else:
             xhat.light.blue.off()
+            xhat.output.one.off()
     if channel == 2:
         yellow = not yellow
         if yellow:
             xhat.light.yellow.on()
+            xhat.output.two.on()
         else:
             xhat.light.yellow.off()
+            xhat.output.two.off()
     if channel == 3:
         chocks = not chocks
         if chocks:
-            watchdog_running = False;
+            watchdog_running = False
             chocks_on()
         else:
-            watchdog_running = True;
+            watchdog_running = True
             chocks_off()
     if channel == 4:
         xhat.light.green.blink(0.1)
+        green = True
         time.sleep(5)
         if chocks:
             xhat.light.green.on()
             os.system("sudo -s shutdown -h now")
         else:
             xhat.light.green.off()
+            green = False
     
 def brakes_on():
     global brakes
@@ -130,8 +138,6 @@ def gen(camera):
         while True:
             frame = camera.get_frame()
             yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-    else:
-        yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + '' + b'\r\n')
 
 # URL to remote control touchpads 1-4 on explorer-hat
 @app.route('/touchpad')
@@ -148,6 +154,10 @@ def heartbeat():
     global watchdog
     watchdog = 0
     output = {}
+    output['b'] = blue
+    output['y'] = yellow
+    output['c'] = chocks
+    output['g'] = green
     output['v'] = video_status
     output['l'] = left_motor
     output['r'] = right_motor
