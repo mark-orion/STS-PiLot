@@ -16,14 +16,11 @@
 <div id="l-60" class="controlpad speed_60" onclick="motor_l(-60)">&nbsp;</div>
 <div id="l-100" class="controlpad speed_100" onclick="motor_l(-100)">&nbsp;</div>
 </div>
+<div id="stop" onclick="brake()"><div class="label">Stop!</div></div>
 <div id="middle">
 <div id="videowrapper" onclick="brake()">
-<!--
-<div id="video"><img src="{{ url_for('video_feed') }}" alt="Connecting to Live Video"></div>
--->
 <div id="video"></div>
 <div id="overlay">
-<div id="title">STS-Pilot</div>
 <div id="status"></div>
 <div id="sensors"></div>
 </div>

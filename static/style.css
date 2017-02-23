@@ -26,6 +26,10 @@ float: left;
 overflow: hidden;
 }
 
+#stop {
+display: none;
+}
+
 #middle {
 height: 100%;
 width: 80%;
@@ -153,6 +157,20 @@ height: 50%;
 top: 50%;
 left: 0;
 overflow: hidden;
+}
+
+#stop {
+display: block;
+position: absolute;
+width: 60%;
+height: 50%;
+top: 50%;
+left: 20%;
+overflow: hidden;
+background-color: #a70000;
+text-align: center;
+font-weight: bold;
+font-size: 300%;
 }
 
 #rightbar {

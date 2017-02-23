@@ -9,7 +9,7 @@ function makeHttpObject() {
 }
 var request = makeHttpObject();
 var getSensors = makeHttpObject();
-var doubleClickTimer = 200;
+var doubleClickTimer = 300;
 var linkCheckTimer = 5000;
 var heartbeatTimer = 1000;
 var newSpeedL = 0;
@@ -52,7 +52,7 @@ function updateHUD(e) {
 	if (getSensors.readyState == 4 && getSensors.status == 200) {
         var response = JSON.parse(getSensors.responseText);
         video = response.v;
-        status = "Status<br>Link: online<br>Videolink: ";
+        status = "STS-PiLot Status<br>Link: online<br>Videolink: ";
         status += video;
         status += "<br>Motor L: ";
         status += response.l;
@@ -76,6 +76,10 @@ function updateHUD(e) {
         sensors += response.a4;
         document.getElementById("status").innerHTML = status;
         document.getElementById("sensors").innerHTML = sensors;
+        button_status('blue', response.b);
+        button_status('yellow', response.y);
+        button_status('red', response.c);
+        button_status('green', response.g);
         clearTimeout(linkCheck);
 		linkCheck = setTimeout(linkLost, linkCheckTimer);
 		if (!link) {
@@ -85,11 +89,19 @@ function updateHUD(e) {
 	}
 }
 function toggle_hud() {
+	button_status('hud', showHUD);
 	showHUD = !showHUD;
 	if (showHUD) {
 		document.getElementById("overlay").style.display = 'block';
 	} else {
 		document.getElementById("overlay").style.display = 'none';
+	}
+}
+function button_status(button, status) {
+	if (status) {
+		document.getElementById(button).style.opacity = '0.5';
+	} else {
+		document.getElementById(button).style.opacity = '1';
 	}
 }
 function reset_doubleclick() {
@@ -146,6 +158,7 @@ function brake() {
     set_motor();
 }
 heartbeat();
+
 
 
 
