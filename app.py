@@ -2,17 +2,25 @@
 import os
 import sys
 import signal
-import explorerhat as xhat
 import threading
 import time
 import json
 from flask import Flask, request, Response
 from gevent.wsgi import WSGIServer
 
+import config as cfg
+
+# Generic (OpenCV based) camera module (requires python-opencv package)
+# from camera_cv import Camera, check_camera
+
 # Raspberry Pi camera module (requires picamera package)
 from camera_pi import Camera, check_camera
 
-import config as cfg
+# Uncomment to use standard (Explorer HAT) io_wrapper.py
+import io_wrapper as hw
+
+# Uncomment to use dummy (Software Only) io_wrapper_dummy.py
+# import io_wrapper_dummy as hw
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -29,12 +37,12 @@ def watchdog_timer():
 
 # Handler for a clean shutdown when pressing Ctrl-C
 def signal_handler(signal, frame):
-    xhat.light.blue.blink(0.1)
+    hw.light_blue_blink(0.1)
     cfg.watchdog_active = False
     brakes_on()
     wd.join()
     http_server.close()
-    xhat.light.blue.off()
+    hw.light_blue_off()
     sys.exit(0)
 
 # Handler for explorer-hat touchpads
@@ -42,19 +50,19 @@ def touch_handler(channel, event):
     if channel == 1:
         cfg.blue = not cfg.blue
         if cfg.blue:
-            xhat.light.blue.on()
-            xhat.output.one.on()
+            hw.light_blue_on()
+            hw.output_one_on()
         else:
-            xhat.light.blue.off()
-            xhat.output.one.off()
+            hw.light_blue_off()
+            hw.output_one_off()
     if channel == 2:
         cfg.yellow = not cfg.yellow
         if cfg.yellow:
-            xhat.light.yellow.on()
-            xhat.output.two.on()
+            hw.light_yellow_on()
+            hw.output_two_on()
         else:
-            xhat.light.yellow.off()
-            xhat.output.two.off()
+            hw.light_yellow_off()
+            hw.output_two_off()
     if channel == 3:
         cfg.chocks = not cfg.chocks
         if cfg.chocks:
@@ -64,22 +72,22 @@ def touch_handler(channel, event):
             cfg.watchdog_running = True
             chocks_off()
     if channel == 4:
-        xhat.light.green.blink(0.1)
+        hw.light_green_blink(0.1)
         cfg.green = True
         time.sleep(5)
         if cfg.chocks:
-            xhat.light.green.on()
+            hw.light_green_on()
             os.system("sudo -s shutdown -h now")
         else:
-            xhat.light.green.off()
+            hw.light_green_off()
             cfg.green = False
     
 def brakes_on():
     cfg.brakes = True
     cfg.left_motor = 0
     cfg.right_motor = 0
-    xhat.motor.one.speed(cfg.right_motor)
-    xhat.motor.two.speed(cfg.left_motor)
+    hw.motor_one_speed(cfg.right_motor)
+    hw.motor_two_speed(cfg.left_motor)
     
 def brakes_off():
     cfg.brakes = False
@@ -88,12 +96,12 @@ def brakes_off():
 def chocks_on():
     cfg.chocks = True
     brakes_on()
-    xhat.light.red.blink(0.2)
+    hw.light_red_blink(0.2)
     
 def chocks_off():
     cfg.chocks = False
     brakes_off()
-    xhat.light.red.off()
+    hw.light_red_off()
 
 
 # Base URL / - loads web interface        
@@ -134,14 +142,14 @@ def heartbeat():
     output['v'] = cfg.video_status
     output['l'] = cfg.left_motor
     output['r'] = cfg.right_motor
-    output['i1'] = xhat.input.one.read()
-    output['i2'] = xhat.input.two.read()
-    output['i3'] = xhat.input.three.read()
-    output['i4'] = xhat.input.four.read()
-    output['a1'] = xhat.analog.one.read()
-    output['a2'] = xhat.analog.two.read()
-    output['a3'] = xhat.analog.three.read()
-    output['a4'] = xhat.analog.four.read()
+    output['i1'] = hw.input_one_read()
+    output['i2'] = hw.input_two_read()
+    output['i3'] = hw.input_three_read()
+    output['i4'] = hw.input_four_read()
+    output['a1'] = hw.analog_one_read()
+    output['a2'] = hw.analog_two_read()
+    output['a3'] = hw.analog_three_read()
+    output['a4'] = hw.analog_four_read()
     return json.dumps(output)
 
 # URL for motor control - format: /motor?l=[speed]&r=[speed]
@@ -153,12 +161,12 @@ def motor():
         left = int(left)
         if left >= -100 and left <= 100:
             cfg.left_motor = left
-            xhat.motor.two.speed(cfg.left_motor)
+            hw.motor_two_speed(cfg.left_motor)
     if right and not cfg.chocks:
         right = int(right)
         if right >= -100 and right <= 100:
             cfg.right_motor = right
-            xhat.motor.one.speed(cfg.right_motor)
+            hw.motor_one_speed(cfg.right_motor)
     return 'ok'
 
 # URL for joystick input - format: /joystick?x=[x-axis]&y=[y-axis]
@@ -175,8 +183,8 @@ def joystick():
     if not cfg.chocks:
         cfg.right_motor = r
         cfg.left_motor = l
-        xhat.motor.one.speed(cfg.right_motor)
-        xhat.motor.two.speed(cfg.left_motor)
+        hw.motor_one_speed(cfg.right_motor)
+        hw.motor_two_speed(cfg.left_motor)
     return 'ok'
 
 # URL for live video feed
@@ -189,16 +197,17 @@ def video_feed():
         return 'no video'
 
 if __name__ == '__main__':
-    xhat.light.green.blink(0.1)
+    hw.light_green_blink(0.1)
     time.sleep(1)
-    xhat.light.green.off()
+    hw.light_green_off()
     cfg.camera_detected = check_camera()
     
     # register signal handler for a clean exit    
     signal.signal(signal.SIGINT, signal_handler)
 
     # register handler for touchpads
-    xhat.touch.released(touch_handler)
+    if hw.explorerhat:
+        hw.xhat.touch.released(touch_handler)
         
     # prepare and start watchdog
     wd = threading.Thread(name='watchdog_timer', target=watchdog_timer)
