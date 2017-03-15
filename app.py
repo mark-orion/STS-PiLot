@@ -12,38 +12,25 @@ from gevent.wsgi import WSGIServer
 # Raspberry Pi camera module (requires picamera package)
 from camera_pi import Camera, check_camera
 
+import config as cfg
+
 app = Flask(__name__, static_url_path='/static')
-camera_detected = True
-video_status = True
-brakes = False
-chocks = False
-blue = False
-yellow = False
-green = False
-watchdog_active = True
-watchdog_running = True
-watchdog = 20
-timeout = 10
-left_motor = 0
-right_motor = 0
 
 # Immobilizes sytem (chocks on) after 'timeout' seconds 
 def watchdog_timer():
-    global watchdog
-    while watchdog_active:
+    while cfg.watchdog_active:
         time.sleep(1)
-        if watchdog_running:
-            watchdog += 1
-            if watchdog > timeout and not chocks:
+        if cfg.watchdog_running:
+            cfg.watchdog += 1
+            if cfg.watchdog > cfg.timeout and not cfg.chocks:
                 chocks_on()
-            if watchdog <= timeout and chocks:
+            if cfg.watchdog <= cfg.timeout and cfg.chocks:
                 chocks_off()
 
 # Handler for a clean shutdown when pressing Ctrl-C
 def signal_handler(signal, frame):
     xhat.light.blue.blink(0.1)
-    global watchdog_active
-    watchdog_active = False
+    cfg.watchdog_active = False
     brakes_on()
     wd.join()
     http_server.close()
@@ -52,71 +39,59 @@ def signal_handler(signal, frame):
 
 # Handler for explorer-hat touchpads
 def touch_handler(channel, event):
-    global chocks
-    global blue
-    global yellow
-    global green
-    global watchdog_running
     if channel == 1:
-        blue = not blue
-        if blue:
+        cfg.blue = not cfg.blue
+        if cfg.blue:
             xhat.light.blue.on()
             xhat.output.one.on()
         else:
             xhat.light.blue.off()
             xhat.output.one.off()
     if channel == 2:
-        yellow = not yellow
-        if yellow:
+        cfg.yellow = not cfg.yellow
+        if cfg.yellow:
             xhat.light.yellow.on()
             xhat.output.two.on()
         else:
             xhat.light.yellow.off()
             xhat.output.two.off()
     if channel == 3:
-        chocks = not chocks
-        if chocks:
-            watchdog_running = False
+        cfg.chocks = not cfg.chocks
+        if cfg.chocks:
+            cfg.watchdog_running = False
             chocks_on()
         else:
-            watchdog_running = True
+            cfg.watchdog_running = True
             chocks_off()
     if channel == 4:
         xhat.light.green.blink(0.1)
-        green = True
+        cfg.green = True
         time.sleep(5)
-        if chocks:
+        if cfg.chocks:
             xhat.light.green.on()
             os.system("sudo -s shutdown -h now")
         else:
             xhat.light.green.off()
-            green = False
+            cfg.green = False
     
 def brakes_on():
-    global brakes
-    global left_motor
-    global right_motor
-    brakes = True
-    left_motor = 0;
-    right_motor = 0;
-    xhat.motor.one.speed(right_motor)
-    xhat.motor.two.speed(left_motor)
+    cfg.brakes = True
+    cfg.left_motor = 0
+    cfg.right_motor = 0
+    xhat.motor.one.speed(cfg.right_motor)
+    xhat.motor.two.speed(cfg.left_motor)
     
 def brakes_off():
-    global brakes
-    global watchdog
-    brakes = False
-    watchdog = 0
+    cfg.brakes = False
+    cfg.watchdog = 0
     
 def chocks_on():
-    global chocks
-    chocks = True
+    cfg.chocks = True
     brakes_on()
     xhat.light.red.blink(0.2)
     
 def chocks_off():
-    global chocks
-    chocks = False
+    cfg.chocks = False
     brakes_off()
     xhat.light.red.off()
 
@@ -124,17 +99,16 @@ def chocks_off():
 # Base URL / - loads web interface        
 @app.route('/')
 def index():
-    global video_status
     novideo = request.args.get('video')
     if novideo == 'n':
-        video_status = False
+        cfg.video_status = False
     else:
-	video_status = camera_detected
+	cfg.video_status = cfg.camera_detected
     return app.send_static_file('index.html')
 
 def gen(camera):
     """Video streaming generator function."""
-    if video_status:
+    if cfg.video_status:
         while True:
             frame = camera.get_frame()
             yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
@@ -151,16 +125,15 @@ def touchpad():
 # Returns JSON object with status data
 @app.route('/heartbeat')
 def heartbeat():
-    global watchdog
-    watchdog = 0
+    cfg.watchdog = 0
     output = {}
-    output['b'] = blue
-    output['y'] = yellow
-    output['c'] = chocks
-    output['g'] = green
-    output['v'] = video_status
-    output['l'] = left_motor
-    output['r'] = right_motor
+    output['b'] = cfg.blue
+    output['y'] = cfg.yellow
+    output['c'] = cfg.chocks
+    output['g'] = cfg.green
+    output['v'] = cfg.video_status
+    output['l'] = cfg.left_motor
+    output['r'] = cfg.right_motor
     output['i1'] = xhat.input.one.read()
     output['i2'] = xhat.input.two.read()
     output['i3'] = xhat.input.three.read()
@@ -174,27 +147,23 @@ def heartbeat():
 # URL for motor control - format: /motor?l=[speed]&r=[speed]
 @app.route('/motor')
 def motor():
-    global left_motor
-    global right_motor
     left = request.args.get('l')
     right = request.args.get('r')
-    if left and not chocks:
+    if left and not cfg.chocks:
         left = int(left)
         if left >= -100 and left <= 100:
-            left_motor = left
-            xhat.motor.two.speed(left_motor)
-    if right and not chocks:
+            cfg.left_motor = left
+            xhat.motor.two.speed(cfg.left_motor)
+    if right and not cfg.chocks:
         right = int(right)
         if right >= -100 and right <= 100:
-            right_motor = right
-            xhat.motor.one.speed(right_motor)
+            cfg.right_motor = right
+            xhat.motor.one.speed(cfg.right_motor)
     return 'ok'
 
 # URL for joystick input - format: /joystick?x=[x-axis]&y=[y-axis]
 @app.route('/joystick')
 def joystick():
-    global left_motor
-    global right_motor
     x_axis = -1 * int(request.args.get('x'))
     y_axis = int(request.args.get('y'))
     x_axis = max( min(x_axis, 100), -100)
@@ -203,17 +172,17 @@ def joystick():
     w = (100-abs(y_axis)) * (x_axis/100) + x_axis
     r = int((v+w) / 2)
     l = int((v-w) / 2)
-    if not chocks:
-        right_motor = r
-        left_motor = l
-        xhat.motor.one.speed(right_motor)
-        xhat.motor.two.speed(left_motor)
+    if not cfg.chocks:
+        cfg.right_motor = r
+        cfg.left_motor = l
+        xhat.motor.one.speed(cfg.right_motor)
+        xhat.motor.two.speed(cfg.left_motor)
     return 'ok'
 
 # URL for live video feed
 @app.route('/video_feed')
 def video_feed():
-    if camera_detected:
+    if cfg.camera_detected:
         """Video streaming route. Put this in the src attribute of an img tag."""
         return Response(gen(Camera()), mimetype='multipart/x-mixed-replace; boundary=frame')
     else:
@@ -223,7 +192,7 @@ if __name__ == '__main__':
     xhat.light.green.blink(0.1)
     time.sleep(1)
     xhat.light.green.off()
-    camera_detected = check_camera()
+    cfg.camera_detected = check_camera()
     
     # register signal handler for a clean exit    
     signal.signal(signal.SIGINT, signal_handler)
