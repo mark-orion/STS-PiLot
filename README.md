@@ -13,6 +13,8 @@ The live streaming part is based on the example code provided by Miguel Grinberg
 * API provides both "tank track" style (Y-Y) and joystick style (X-Y) interface.
 * Robot stops automatically when connection is lost.
 * Data and video connection is automatically reestablished after connection loss.
+* Use camera_cv.py for standard webcams.
+* Use io_wrapper_dummy.py for IO board emulation. 
 
 ## Requirements
 * STS-Pi with Raspberry Pi and Explorer Hat Pro
@@ -26,8 +28,9 @@ Please use one of the tested browsers instead.
 
 ## Install Dependencies (Picamera, Flask, Gevent, Simplejson)
 sudo apt-get install python-picamera python-flask python-gevent python-simplejson
+For generic webcam support (camera_cv.py) add: sudo apt-get install python-opencv python-pil
 
-## Install Explorer Hat support
+## Install Explorer Hat support (not needed for io_wrapper_dummy.py)
 follow these instructions: https://github.com/pimoroni/explorer-hat
 
 ## Install STS-PiLot
@@ -89,6 +92,16 @@ No frills, bells and whistles MJPEG video feed from the camera.
 The root serves the web interface itself.
 
 ### /?video=n
-Calls the web interface without live video enabled.  
+Calls the web interface without live video enabled.
+
+## Files
+* app.py - the main application.
+* config.py - application wide global variables.
+* camera_pi.py - camera module for RPi camera module.
+* camera_cv.py - camera module for generic (web)cams.
+* io_wrapper.py - IO wrapper configured for Explorer HAT/pHAT.
+* io_wrapper_dummy.py - Dummy IO wrapper (no hardware required).
+* autostart.sh - script to start the program via /etc/rc.local.
+
 
 Enjoy! Mark Dammer, Forres, Scotland 2017

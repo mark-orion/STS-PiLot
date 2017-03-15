@@ -10,17 +10,11 @@ from gevent.wsgi import WSGIServer
 
 import config as cfg
 
-# Generic (OpenCV based) camera module (requires python-opencv package)
-# from camera_cv import Camera, check_camera
-
-# Raspberry Pi camera module (requires picamera package)
 from camera_pi import Camera, check_camera
+#from camera_cv import Camera, check_camera
 
-# Uncomment to use standard (Explorer HAT) io_wrapper.py
 import io_wrapper as hw
-
-# Uncomment to use dummy (Software Only) io_wrapper_dummy.py
-# import io_wrapper_dummy as hw
+#import io_wrapper_dummy as hw
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -111,7 +105,7 @@ def index():
     if novideo == 'n':
         cfg.video_status = False
     else:
-	cfg.video_status = cfg.camera_detected
+        cfg.video_status = cfg.camera_detected
     return app.send_static_file('index.html')
 
 def gen(camera):

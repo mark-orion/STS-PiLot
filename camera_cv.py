@@ -1,67 +1,59 @@
 from __future__ import print_function
+import time
+import threading
 import cv2
-import sys
+import cv2.cv as cv
+import Image
+import StringIO
 
 def check_camera():
+    time.sleep(1)
     return True
     
+
 class Camera(object):
-
-    def __init__(self):
-        self.width = 320
-        self.height = 240
-        self.video_src = 0
-        self.loop = False
-        self.flip = 1
-        self.cam = cv2.VideoCapture(self.video_src)
-        self.cam.set(cv.CV_CAP_PROP_FRAME_WIDTH, float(self.input_width))
-        self.cam.set(cv.CV_CAP_PROP_FRAME_HEIGHT, float(self.input_height))
-        if self.cam is None or not self.cam.isOpened():
-            print("Warning: unable to open video source:" + str(self.video_src), file = sys.stderr)
-
+    thread = None  # background thread that reads frames from camera
+    frame = None  # current frame is stored here by background thread
+    last_access = 0  # time of last client access to the camera
+    width = 320
+    height = 240
+    video_src = 0
+    loop = False
+    flip = 1
+    camera_active = True
+    
+    def initialize(self):
+        if Camera.thread is None:
+            # start background frame thread
+            Camera.thread = threading.Thread(target=self._thread)
+            Camera.thread.start()
+            # wait until frames start to be available
+            while self.frame is None:
+                time.sleep(0)
 
     def get_frame(self):
-        self.ret, self.video_frame = self.cam.read()
-        while self.ret is False:
-            if self.loop:
-                self.cam.set(cv.CV_CAP_PROP_POS_FRAMES, 0)
-                self.ret, self.video_frame = self.cam.read()
-            else:
-                self.error_handler()
-        self.video_frame = cv2.flip(self.video_frame, self.flip)
-        return self.video_frame
-    
-    def error_handler(self):
-        print("No more frames or capture device down - exiting.",
-              file=sys.stderr)
-        sys.exit(0)
+        Camera.last_access = time.time()
+        self.initialize()
+        return self.frame
 
-    '''
     @classmethod
     def _thread(cls):
-        with picamera.PiCamera() as camera:
-            # camera setup
-            cam = cv2.VideoCapture(video_src)
-            cam.set(cv.CV_CAP_PROP_FRAME_WIDTH,
-                         float(input_width))
-            cam.set(cv.CV_CAP_PROP_FRAME_HEIGHT,
-                         float(input_height))
-            time.sleep(2)
-
-            stream = io.BytesIO()
-            for foo in camera.capture_continuous(stream, 'jpeg',
-                                                 use_video_port=True):
-                # store frame
-                stream.seek(0)
-                cls.frame = stream.read()
-
-                # reset stream for next frame
-                stream.seek(0)
-                stream.truncate()
-
-                # if there hasn't been any clients asking for frames in
-                # the last 10 seconds stop the thread
-                if time.time() - cls.last_access > 10:
-                    break
-        cls.thread = None
-    '''
+        # camera setup
+        camera = cv2.VideoCapture(cls.video_src)
+        camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, float(cls.width))
+        camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, float(cls.height))
+        # frame grabber loop
+        while cls.camera_active:
+            sbuffer = StringIO.StringIO()
+            camtest = False
+            while camtest == False:
+                camtest, rawimg = camera.read()
+            imgRGB=cv2.cvtColor(rawimg, cv2.COLOR_BGR2RGB)
+            img = Image.fromarray(imgRGB)
+            img.save(sbuffer, 'JPEG')
+            cls.frame = sbuffer.getvalue()
+            # if there hasn't been any clients asking for frames in
+            # the last 10 seconds stop the thread
+            if time.time() - cls.last_access > 10:
+                break
+                
