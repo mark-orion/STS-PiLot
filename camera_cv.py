@@ -6,6 +6,8 @@ import cv2.cv as cv
 import Image
 import StringIO
 
+import config as cfg
+
 def check_camera():
     time.sleep(1)
     return True
@@ -15,12 +17,6 @@ class Camera(object):
     thread = None  # background thread that reads frames from camera
     frame = None  # current frame is stored here by background thread
     last_access = 0  # time of last client access to the camera
-    width = 320
-    height = 240
-    video_src = 0
-    loop = False
-    flip = 1
-    camera_active = True
     
     def initialize(self):
         if Camera.thread is None:
@@ -39,15 +35,19 @@ class Camera(object):
     @classmethod
     def _thread(cls):
         # camera setup
-        camera = cv2.VideoCapture(cls.video_src)
-        camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, float(cls.width))
-        camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, float(cls.height))
+        camera = cv2.VideoCapture(cfg.video_src)
+        camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, float(cfg.width))
+        camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, float(cfg.height))
         # frame grabber loop
-        while cls.camera_active:
+        while cfg.camera_active:
             sbuffer = StringIO.StringIO()
             camtest = False
             while camtest == False:
                 camtest, rawimg = camera.read()
+            if cfg.hflip:
+                rawimg = cv2.flip(rawimg, 1)
+            if cfg.vflip:
+                rawimg = cv2.flip(rawimg, 0)
             imgRGB=cv2.cvtColor(rawimg, cv2.COLOR_BGR2RGB)
             img = Image.fromarray(imgRGB)
             img.save(sbuffer, 'JPEG')

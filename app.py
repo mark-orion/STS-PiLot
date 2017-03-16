@@ -10,11 +10,11 @@ from gevent.wsgi import WSGIServer
 
 import config as cfg
 
-from camera_pi import Camera, check_camera
-#from camera_cv import Camera, check_camera
+#from camera_pi import Camera, check_camera
+from camera_cv import Camera, check_camera
 
-import io_wrapper as hw
-#import io_wrapper_dummy as hw
+#import io_wrapper as hw
+import io_wrapper_dummy as hw
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -33,6 +33,7 @@ def watchdog_timer():
 def signal_handler(signal, frame):
     hw.light_blue_blink(0.1)
     cfg.watchdog_active = False
+    cfg.camera_active = False
     brakes_on()
     wd.join()
     http_server.close()

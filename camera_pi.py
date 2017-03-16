@@ -2,6 +2,7 @@ import time
 import io
 import threading
 import picamera
+import config as cfg
 
 def check_camera():
     try:
@@ -38,9 +39,9 @@ class Camera(object):
     def _thread(cls):
         with picamera.PiCamera() as camera:
             # camera setup
-            camera.resolution = (320, 240)
-            camera.hflip = True
-            camera.vflip = True
+            camera.resolution = (cfg.width, cfg.height)
+            camera.hflip = cfg.hflip
+            camera.vflip = cfg.vflip
 
             # let camera warm up
             camera.start_preview()
@@ -59,6 +60,6 @@ class Camera(object):
 
                 # if there hasn't been any clients asking for frames in
                 # the last 10 seconds stop the thread
-                if time.time() - cls.last_access > 10:
+                if time.time() - cls.last_access > 10 or cfg.camera_active is False:
                     break
         cls.thread = None
