@@ -40,8 +40,8 @@ class Camera(object):
         with picamera.PiCamera() as camera:
             # camera setup
             camera.resolution = (cfg.width, cfg.height)
-            camera.hflip = cfg.hflip
-            camera.vflip = cfg.vflip
+            camera.hflip = cfg.pi_hflip
+            camera.vflip = cfg.pi_vflip
 
             # let camera warm up
             camera.start_preview()

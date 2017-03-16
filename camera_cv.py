@@ -44,9 +44,9 @@ class Camera(object):
             camtest = False
             while camtest == False:
                 camtest, rawimg = camera.read()
-            if cfg.hflip:
+            if cfg.cv_hflip:
                 rawimg = cv2.flip(rawimg, 1)
-            if cfg.vflip:
+            if cfg.cv_vflip:
                 rawimg = cv2.flip(rawimg, 0)
             imgRGB=cv2.cvtColor(rawimg, cv2.COLOR_BGR2RGB)
             img = Image.fromarray(imgRGB)
