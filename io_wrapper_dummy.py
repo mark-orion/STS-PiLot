@@ -9,7 +9,7 @@ This is a hardware independent replacement for the original io_wrapper.py.
 It does not interface to any specific IO board, but returns random values for
 the sensors and prints the output values to the console.
 """
-
+from __future__ import division
 import random
 
 explorerhat = False
@@ -35,19 +35,19 @@ def input_four_read():
 # Inputs: Analog
 
 def analog_one_read():
-    analog = random.uniform(0, 5)
+    analog = random.randrange(0, 5000) / 1000
     return analog
 
 def analog_two_read():
-    analog = random.uniform(0, 5)
+    analog = random.randrange(0, 5000) / 1000
     return analog
 
 def analog_three_read():
-    analog = random.uniform(0, 5)
+    analog = random.randrange(0, 5000) / 1000
     return analog
 
 def analog_four_read():
-    analog = random.uniform(0, 5)
+    analog = random.randrange(0, 5000) / 1000
     return analog
 
 # Outputs: Motors
