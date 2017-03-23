@@ -10,8 +10,8 @@ from gevent.wsgi import WSGIServer
 
 import config as cfg
 
-from camera_pi import Camera, check_camera
-#from camera_cv import Camera, check_camera
+import camera_pi as cam
+#import camera_cv as cam
 
 import io_wrapper as hw
 #import io_wrapper_dummy as hw
@@ -102,11 +102,16 @@ def chocks_off():
 # Base URL / - loads web interface        
 @app.route('/')
 def index():
-    novideo = request.args.get('video')
-    if novideo == 'n':
+    cfg.video_fps = 0
+    video = request.args.get('video')
+    if video == 'n':
         cfg.video_status = False
     else:
-        cfg.video_status = cfg.camera_detected
+        if video == None:
+            cfg.video_status = cfg.camera_detected
+        elif float(video) > 0:
+            cfg.video_fps = float(video)
+            cfg.video_status = cfg.camera_detected
     return app.send_static_file('index.html')
 
 def gen(camera):
@@ -134,6 +139,7 @@ def heartbeat():
     output['y'] = cfg.yellow
     output['c'] = cfg.chocks
     output['g'] = cfg.green
+    output['f'] = cfg.video_fps
     output['v'] = cfg.video_status
     output['l'] = cfg.left_motor
     output['r'] = cfg.right_motor
@@ -182,12 +188,21 @@ def joystick():
         hw.motor_two_speed(cfg.left_motor)
     return 'ok'
 
-# URL for live video feed
+# URL for video stream feed
 @app.route('/video_feed')
 def video_feed():
     if cfg.camera_detected:
         """Video streaming route. Put this in the src attribute of an img tag."""
-        return Response(gen(Camera()), mimetype='multipart/x-mixed-replace; boundary=frame')
+        return Response(gen(cam.Camera()), mimetype='multipart/x-mixed-replace; boundary=frame')
+    else:
+        return 'no video'
+        
+# URL for single frame feed
+@app.route('/single_frame')
+def single_frame():
+    if cfg.camera_detected:
+        jpeg =  cam.single_frame()
+        return Response(jpeg, mimetype='image/jpeg; boundary=frame')
     else:
         return 'no video'
 
@@ -195,7 +210,7 @@ if __name__ == '__main__':
     hw.light_green_blink(0.1)
     time.sleep(1)
     hw.light_green_off()
-    cfg.camera_detected = check_camera()
+    cfg.camera_detected, cfg.camera = cam.init_camera()
     
     # register signal handler for a clean exit    
     signal.signal(signal.SIGINT, signal_handler)

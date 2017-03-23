@@ -19,8 +19,11 @@ var actSpeedR = 0;
 var doubleClick = false;
 var showHUD = true;
 var video = false;
+var framerate = 0;
 var link = true;
-var videosrc = '<img src="/video_feed" alt="Connecting to Live Video">'
+var videoimg = '<img src="/video_feed" alt="Connecting to Live Video">'
+var frameimg = '<img id="sframe" src="/single_frame" alt="Connecting to Live Video">'
+var framesrc = '/single_frame'
 var inactive = "0px";
 var active = "10px solid black";
 var clickTimer = setTimeout(reset_doubleclick, doubleClickTimer);
@@ -38,8 +41,16 @@ function linkLost() {
 }
 function checkVideo() {
 	if (video) {
-		document.getElementById("video").innerHTML = videosrc;
+		if (framerate > 0) {
+			document.getElementById("video").innerHTML = frameimg;
+			setInterval(reloadFrame, framerate);
+		} else {
+			document.getElementById("video").innerHTML = videoimg;
+		}
 	}
+}
+function reloadFrame() {
+	document.getElementById("sframe").src = framesrc;
 }
 function heartbeat() {
     var heartbeat_url = "/heartbeat";
@@ -52,6 +63,7 @@ function updateHUD(e) {
 	if (getSensors.readyState == 4 && getSensors.status == 200) {
         var response = JSON.parse(getSensors.responseText);
         video = response.v;
+        framerate = response.f;
         status = "STS-PiLot Status<br>Link: online<br>Videolink: ";
         status += video;
         status += "<br>Motor L: ";

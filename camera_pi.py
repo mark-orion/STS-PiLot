@@ -3,15 +3,28 @@ import io
 import threading
 import picamera
 import config as cfg
-
-def check_camera():
+        
+def init_camera():
     try:
-        with picamera.PiCamera() as camera:
-            camera.start_preview()
-            time.sleep(1)
-        return True
+        camera = picamera.PiCamera()
+        # camera setup
+        camera.resolution = (cfg.width, cfg.height)
+        camera.hflip = cfg.pi_hflip
+        camera.vflip = cfg.pi_vflip
+    
+        # let camera warm up
+        camera.start_preview()
+        time.sleep(2)
+        return True, camera
     except:
-        return False
+        return False, False
+           
+def single_frame():
+    stream = io.BytesIO()
+    cfg.camera.capture(stream, 'jpeg', use_video_port=True)
+    stream.seek(0)
+    frame = stream.read()
+    return frame
     
 class Camera(object):
     thread = None  # background thread that reads frames from camera
@@ -37,29 +50,19 @@ class Camera(object):
 
     @classmethod
     def _thread(cls):
-        with picamera.PiCamera() as camera:
-            # camera setup
-            camera.resolution = (cfg.width, cfg.height)
-            camera.hflip = cfg.pi_hflip
-            camera.vflip = cfg.pi_vflip
+        stream = io.BytesIO()
+        for foo in cfg.camera.capture_continuous(stream, 'jpeg',
+                                             use_video_port=True):
+            # store frame
+            stream.seek(0)
+            cls.frame = stream.read()
 
-            # let camera warm up
-            camera.start_preview()
-            time.sleep(2)
+            # reset stream for next frame
+            stream.seek(0)
+            stream.truncate()
 
-            stream = io.BytesIO()
-            for foo in camera.capture_continuous(stream, 'jpeg',
-                                                 use_video_port=True):
-                # store frame
-                stream.seek(0)
-                cls.frame = stream.read()
-
-                # reset stream for next frame
-                stream.seek(0)
-                stream.truncate()
-
-                # if there hasn't been any clients asking for frames in
-                # the last 10 seconds stop the thread
-                if time.time() - cls.last_access > 10 or cfg.camera_active is False:
-                    break
+            # if there hasn't been any clients asking for frames in
+            # the last 10 seconds stop the thread
+            if time.time() - cls.last_access > 10 or cfg.camera_active is False:
+                break
         cls.thread = None
