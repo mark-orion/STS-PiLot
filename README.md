@@ -13,6 +13,7 @@ The live streaming part is based on the example code provided by Miguel Grinberg
 * API provides both "tank track" style (Y-Y) and joystick style (X-Y) interface.
 * Robot stops automatically when connection is lost.
 * Data and video connection is automatically reestablished after connection loss.
+* Threaded (fast, low latency) and non-threaded (slower, low CPU usage) video capture.
 * Use camera_cv.py for standard webcams.
 * Use io_wrapper_dummy.py for IO board emulation. 
 
@@ -88,11 +89,17 @@ Toggles Explorer Hat touchpads 1-4 and LEDs. 1 and 2 control output 1 and 2 as w
 ### /video_feed
 No frills, bells and whistles MJPEG video feed from the camera.
 
+### /single_frame
+Non threaded (low CPU) single frame JPEG output.
+
 ### /
 The root serves the web interface itself.
 
 ### /?video=n
 Calls the web interface without live video enabled.
+
+### /?video=[msecs]
+Use non-threaded video with [msecs] delay between frames.
 
 ## Files
 * app.py - the main application.
