@@ -198,7 +198,7 @@ def video_feed():
         return 'no video'
         
 # URL for single frame feed
-@app.route('/single_frame')
+@app.route('/single_frame.jpg')
 def single_frame():
     if cfg.camera_detected:
         jpeg =  cam.single_frame()
