@@ -89,7 +89,7 @@ Toggles Explorer Hat touchpads 1-4 and LEDs. 1 and 2 control output 1 and 2 as w
 ### /video_feed
 No frills, bells and whistles MJPEG video feed from the camera.
 
-### /single_frame
+### /single_frame.jpg
 Non threaded (low CPU) single frame JPEG output.
 
 ### /
@@ -109,6 +109,7 @@ Use non-threaded video with [msecs] delay between frames.
 * io_wrapper.py - IO wrapper configured for Explorer HAT/pHAT.
 * io_wrapper_dummy.py - Dummy IO wrapper (no hardware required).
 * autostart.sh - script to start the program via /etc/rc.local.
+* static - this folder contains HTML, CSS and javascript files for the web interface.
 
 
 Enjoy! Mark Dammer, Forres, Scotland 2017
