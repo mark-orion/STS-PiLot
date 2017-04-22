@@ -13,9 +13,10 @@ The live streaming part is based on the example code provided by Miguel Grinberg
 * API provides both "tank track" style (Y-Y) and joystick style (X-Y) interface.
 * Robot stops automatically when connection is lost.
 * Data and video connection is automatically reestablished after connection loss.
-* Threaded (fast, low latency) and non-threaded (slower, low CPU usage) video capture.
-* Use camera_cv.py for standard webcams.
-* Use io_wrapper_dummy.py for IO board emulation. 
+* Threaded (fast, low latency) capture interface.
+* Alternative non-threaded (slower, low CPU usage) video capture for lower spec. computers like the Raspberry Pi Zero.
+* Use camera_cv.py for standard webcams (requires python-opencv).
+* Use io_wrapper_dummy.py for IO board emulation.
 
 ## Requirements
 * STS-Pi with Raspberry Pi and Explorer Hat Pro
@@ -56,6 +57,7 @@ The green LED will flash quickly for about 1 second to indicate STS-PiLot has st
 
 ## Using STS-PiLot
 The web interface runs on port 5000 of the Raspberry Pi. You can access it via http://ip_goes_here:5000 or at http://hostname.local:5000 if you have Avahi / mDNS running on your Pi and the client. Hostname is the hostname of your STS-Pi that can be changed with raspi-config (advanced settings).  
+http://ip_goes_here:5000/?video=300 Opens the slower, non-threaded interface. This interface will grab a single video frame at the given interval in milliseconds (300 in the example).  
 http://ip_goes_here:5000/?video=n opens the interface without live video.  
 Using the webinterface is fairly easy:  
 At the center you have the live video with the controls for the two motors to the left and to the right. In portrait mode the controls appear under the video.  
