@@ -21,7 +21,7 @@ var showHUD = true;
 var video = false;
 var framerate = 0;
 var link = true;
-var videoimg = '<img src="/video_feed" alt="Connecting to Live Video">'
+var videoimg = '<img src="/video_feed.mjpg" alt="Connecting to Live Video">'
 var frameimg = '<img id="sframe" src="/single_frame.jpg" alt="Connecting to Live Video">'
 var framesrc = '/single_frame.jpg'
 var inactive = "0px";

@@ -189,7 +189,7 @@ def joystick():
     return 'ok'
 
 # URL for video stream feed
-@app.route('/video_feed')
+@app.route('/video_feed.mjpg')
 def video_feed():
     if cfg.camera_detected:
         """Video streaming route. Put this in the src attribute of an img tag."""

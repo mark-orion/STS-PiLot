@@ -89,7 +89,7 @@ Returns JSON object with analog and digital input (Sensor) readouts.
 ### /touchpad?pad=[1-4]
 Toggles Explorer Hat touchpads 1-4 and LEDs. 1 and 2 control output 1 and 2 as well.
 
-### /video_feed
+### /video_feed.mjpg
 No frills, bells and whistles MJPEG video feed from the camera.
 
 ### /single_frame.jpg
