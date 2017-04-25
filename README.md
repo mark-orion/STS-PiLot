@@ -113,6 +113,6 @@ Use non-threaded video with [msecs] delay between frames.
 * io_wrapper_dummy.py - Dummy IO wrapper (no hardware required).
 * autostart.sh - script to start the program via /etc/rc.local.
 * static - this folder contains HTML, CSS and javascript files for the web interface.
-
+* client - example programs to control your STS-PiLot instance from another computer.
 
 Enjoy! Mark Dammer, Forres, Scotland 2017

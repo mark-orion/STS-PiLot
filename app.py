@@ -173,6 +173,7 @@ def motor():
 # URL for joystick input - format: /joystick?x=[x-axis]&y=[y-axis]
 @app.route('/joystick')
 def joystick():
+    cfg.watchdog = 0
     x_axis = -1 * int(request.args.get('x'))
     y_axis = int(request.args.get('y'))
     x_axis = max( min(x_axis, 100), -100)
