@@ -184,7 +184,6 @@ def joystick():
     r = int((v+w) / 2)
     l = int((v-w) / 2)
     if not cfg.chocks:
-	print(v, w, r, l)
         cfg.right_motor = r
         cfg.left_motor = l
         hw.motor_one_speed(cfg.right_motor)
