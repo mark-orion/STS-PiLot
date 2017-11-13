@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import division
 import os
 import sys
 import signal
@@ -174,15 +175,16 @@ def motor():
 @app.route('/joystick')
 def joystick():
     cfg.watchdog = 0
-    x_axis = -1 * int(request.args.get('x'))
+    x_axis = int(request.args.get('x'))
     y_axis = int(request.args.get('y'))
-    x_axis = max( min(x_axis, 100), -100)
+    x_axis = -1 * max( min(x_axis, 100), -100)
     y_axis = max( min(y_axis, 100), -100)
     v = (100-abs(x_axis)) * (y_axis/100) + y_axis
     w = (100-abs(y_axis)) * (x_axis/100) + x_axis
     r = int((v+w) / 2)
     l = int((v-w) / 2)
     if not cfg.chocks:
+	print(v, w, r, l)
         cfg.right_motor = r
         cfg.left_motor = l
         hw.motor_one_speed(cfg.right_motor)
