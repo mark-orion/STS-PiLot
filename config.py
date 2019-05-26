@@ -11,7 +11,7 @@ This file contains basic configuration and all former global variables
 width = 320 # Video width requested from camera
 height = 240 # Video height requested from camera
 video_src = 0 # OpenCV video source for camera_cv.py
-pi_hflip = False # Flip Picamera image horizontally
+pi_hflip = True # Flip Picamera image horizontally
 pi_vflip = True # Flip Picamera image vertically
 cv_hflip = False # Flip OpenCV camera image horizontally
 cv_vflip = False # Flip OpenCV camera image vertically
@@ -20,6 +20,7 @@ cv_vflip = False # Flip OpenCV camera image vertically
 camera_detected = True
 camera_active = True
 camera = None
+stream = None
 video_status = True
 video_fps = 0
 brakes = False
