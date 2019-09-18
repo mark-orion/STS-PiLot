@@ -1,7 +1,9 @@
 # STS-PiLot
 AJAX remote control web interface with live video for the [Pimoroni STS-Pi](https://shop.pimoroni.com/products/sts-pi) and other robotics projects.  
   
-**ATTENTION:** There is a **new app** called "app_sanic.py" that uses the [SANIC framework](https://github.com/huge-success/sanic) instead of flask. This app works with both Python3 and PyPy3, but not Python2. Videostreaming is now provided via the [UV4L video driver/streaming server](https://www.linux-projects.org/uv4l/). UV4L must be installed separately. The default UV4L stream settings (Port 8080, /stream/video.mjpeg) are used to embed the video into the STS-Pilot web UI. This app was developed for increased video performance (UV4L) and better resource usage (PyPy3).  
+**ATTENTION:** There is a **new app** called "app_sanic.py" that uses the [SANIC framework](https://github.com/huge-success/sanic) instead of flask. This app works with both Python3 and PyPy3, but not Python2.  
+Videostreaming is now provided via the [UV4L video driver/streaming server](https://www.linux-projects.org/uv4l/). UV4L must be installed separately. The default UV4L stream settings (Port 8080, /stream/video.mjpeg) are used to embed the video into the STS-Pilot web UI. This app was developed for increased video performance (UV4L) and better resource usage (PyPy3).  
+autostart_sanic.sh can be used to start both the sanic based app and the UV4L streaming server.  
   
 "app.py" still contains the flask + gevent.wsgi based app.  
 An entire flask based app is available as "app_flask.py"  
